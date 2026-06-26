@@ -1,0 +1,107 @@
+body {
+    font-family: "Courier New", monospace;
+    background: #1a1a2e;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.ui {
+    display: flex;
+    justify-content: space-between;
+    width: 480px;
+}
+
+#grid {
+    height: 432px;
+    width: 480px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) inset, 0 1px 0 #fff;
+    display: flex;
+    flex-wrap: wrap;
+    background: url('images/u4DVsx6.png');
+    background-size: cover;
+    position: relative;
+    padding: 0;
+}
+
+#grid div {
+    height: 48px;
+    width: 48px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.link-going-left {
+background-image: url('images/1Xq9biB.png');
+}
+
+.link-going-right {
+    background-image: url('images/yZIb8O2.png');
+
+}
+
+.link-going-up {
+    background-image: url('images/UkV0we0.png');
+
+}
+
+.link-going-down {
+    background-image: url('images/tVtlP6y.png');
+
+}
+
+.left-wall {
+    background-image: url('images/rfDoaa1.png')
+}
+
+.top-wall {
+    background-image: url('images/QA257Bj.png')
+}
+
+.bottom-wall {
+    background-image: url('images/vWJWmvb.png')
+}
+
+.right-wall {
+    background-image: url('images/SmHhgUn.png')
+}
+
+.bottom-left-wall {
+    background-image: url('images/awnTfNC.png')
+}
+
+.bottom-right-wall {
+    background-image: url('images/84oyTFy.png')
+}
+
+.top-left-wall {
+    background-image: url('images/xlpUxIm.png')
+}
+
+.top-right-wall {
+    background-image: url('images/z0OmBd1.jpg')
+}
+
+.top-door {
+    background-image: url('images/U9nre4n.png')
+}
+
+.left-door {
+    background-image: url('images/okdJNls.png')
+}
+
+.stairs {
+    background-image: url('images/VghkL08.png')
+}
+
+.fire-pot {
+    background-image: url('images/I7xSp7w.png')
+}
+
+.lanterns {
+    background-image: url('images/wiSiY09.png')
+}
