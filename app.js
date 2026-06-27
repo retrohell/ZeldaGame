@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // y, w, x,z = corner walls | a, b = side walls | c, d = top/bottom walls
     // ) = laterns | ( fire pots | %  = left door | ´ = top door | $ = stairs
     // * = slicer enemy | } = skeletor enemy | space = empty walkable area
-
     const maps = [
         // Level 1 layout
         [
@@ -31,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'a        b',
             'a   *    b',
             'a        b',
-            'xd ddd)ddz',
+            'xd)ddd)ddz',
         ],
         // Level 2 layout
         [
@@ -64,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentMap = maps[level];
 
         for (let i = 0; i < 9; i++) {
-            for(let j = 0; j < 10; j++){
+            for (let j = 0; j < 10; j++) {
                 const square = document.createElement('div');
                 square.setAttribute('id', i * width + j);
 
@@ -76,14 +75,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         createPlayer()
-        //createAvatar()
+        // createAvatar()
     }
+
     createBoard();
 
     console.log(squares);
 
 
-    function addMapElement(square, char, x, y){
+    function addMapElement(square, char, x, y) {
         switch (char) {
             case 'a':
                 square.classList.add('left-wall')
@@ -125,40 +125,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 square.classList.add('fire-pot')
                 break;
             case '*':
-                createSlicer(x,y)
+                createSlicer(x, y)
                 break;
             case '}':
-                createSkeletor(x,y)
+                createSkeletor(x, y)
                 break;
         }
     }
 
-    function createPlayer(){
-       const playerElement = document.createElement('div')
+    function createPlayer() {
+        const playerElement = document.createElement('div')
         playerElement.className = 'link-going-right'
-        playerElement.id='player'
+        playerElement.id = 'player'
 
         console.log((playerPosition % width) * tileSize)
 
         playerElement.style.left = `${(playerPosition % width) * tileSize}px `
-        playerElement.style.right = `${(playerPosition % width) * tileSize}px `
+        //playerElement.style.right = `${(playerPosition % width) * tileSize}px `
         playerElement.style.top = `${Math.floor(playerPosition / width) * tileSize}px `
-        playerElement.style.bottom = `${Math.floor(playerPosition / width) * tileSize}px `
+        //playerElement.style.bottom = `${Math.floor(playerPosition / width) * tileSize}px `
 
         grid.appendChild(playerElement)
     }
 
-    function createAvatar(){
+    function createAvatar() {
         const playerElement = document.createElement('div')
         playerElement.className = 'link-going-right'
-        playerElement.id='player'
+        playerElement.id = 'player'
         grid.appendChild(playerElement)
     }
 
-    function createSlicer(x,y){
+    function createSlicer(x, y) {
         const slicerElement = document.createElement('div')
         slicerElement.className = 'slicer'
-        slicerElement.id='slicer'
+        slicerElement.id = 'slicer'
         slicerElement.style.left = `${x * tileSize}px`
         slicerElement.style.top = `${y * tileSize}px`
 
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.appendChild(slicerElement)
     }
 
-    function createSkeletor(x,y){
+    function createSkeletor(x, y) {
         const skeletorElement = document.createElement('div')
         skeletorElement.className = 'skeletor'
         skeletorElement.style.left = `${x * tileSize}px`
@@ -193,17 +193,131 @@ document.addEventListener('DOMContentLoaded', () => {
         grid.appendChild(skeletorElement)
     }
 
-    function movePlayer(direction){
+    function movePlayer(direction) {
         const playerElement = document.getElementById('player')
         let newPosition = playerPosition
 
         switch (direction) {
             case 'left':
-                if(playerPosition % width !== 0)
-                    newPosition -1
+                if (playerPosition % width !== 0) newPosition = newPosition - 1
+                playerElement.className = 'link-going-left'
+                playerDirection = 'left'
                 break;
-
+            case 'right':
+                if (playerPosition % width !== width - 1) newPosition = newPosition + 1
+                playerElement.className = 'link-going-right'
+                playerDirection = 'right'
+                break;
+            case 'up':
+                if (playerPosition - width >= 0) newPosition = newPosition - width
+                playerElement.className = 'link-going-up'
+                playerDirection = 'up'
+                break;
+            case 'down':
+                if (playerPosition + width < width * 9) newPosition = newPosition + width
+                playerElement.className = 'link-going-down'
+                playerDirection = 'down'
+                break;
         }
 
+        if (canMoveTo(newPosition)) {
+            const square = squares[newPosition]
+
+            if (square.classList.contains('left-door')) {
+                square.classList.remove('left-door')
+            }
+            if (square.classList.contains('top-door') || square.classList.contains('stairs')) {
+                if (enemies.length === 0) {
+                    nextLevel()
+                } else {
+                    showEnemiesRemainingMessage()
+                }
+                return
+            }
+
+            playerPosition = newPosition
+            playerElement.style.left = `${(playerPosition % width) * tileSize}px `
+            playerElement.style.top = `${Math.floor(playerPosition / width) * tileSize}px `
+        }
     }
+
+    function canMoveTo(position) {
+        if (position < 0 || position >= squares.length) return false
+        const square = squares[position]
+
+        return !square.classList.contains('left-wall') &&
+            !square.classList.contains('right-wall') &&
+            !square.classList.contains('top-wall') &&
+            !square.classList.contains('bottom-wall') &&
+            !square.classList.contains('top-left-wall') &&
+            !square.classList.contains('top-right-wall') &&
+            !square.classList.contains('bottom-left-wall') &&
+            !square.classList.contains('bottom-right-wall') &&
+            !square.classList.contains('lanterns') &&
+            !square.classList.contains('fire-pot')
+    }
+
+    function nextLevel() {
+        level = (level + 1) % maps.length
+        createBoard()
+    }
+
+    function showEnemiesRemainingMessage() {
+        grid.style.fliter = 'hue-rotate(0deg) saturate(2) brightness(1.5)'
+        grid.style.boxShadow = '0 0 20px red'
+
+        setTimeout(() => {
+            grid.style.fliter = ''
+            grid.style.boxShadow = ''
+        }, 300)
+
+        showTemporaryMessage('Enemies remaining: ' + enemies.length, 'red', 2000)
+    }
+
+    function showTemporaryMessage(message, color, duration) {
+        const existing = document.getElementById('temp-message')
+        if (existing) {
+            existing.remove()
+        }
+
+        const messageElement = document.createElement('div')
+        messageElement.id = 'temp-message'
+        messageElement.textContent = message
+        messageElement.style.color = color
+        grid.appendChild(messageElement)
+
+        setTimeout(() => {
+            if (messageElement.parentNode) {
+                messageElement.remove()
+            }
+        }, duration)
+    }
+
+
+    document.addEventListener('keydown', (e) => {
+        if (!gameRunning) return
+
+        switch (e.key) {
+            case 'ArrowLeft':
+                e.preventDefault()
+                movePlayer('left')
+                break
+            case 'ArrowRight':
+                e.preventDefault()
+                movePlayer('right')
+                break
+            case 'ArrowUp':
+                e.preventDefault()
+                movePlayer('up')
+                break
+            case 'ArrowDown':
+                e.preventDefault()
+                movePlayer('down')
+                break
+            case 'Space':
+                // spawnKaboom()
+                break
+        }
+    })
+
 })

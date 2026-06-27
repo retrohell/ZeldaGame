@@ -138,4 +138,20 @@ background-image: url('images/1Xq9biB.png');
     background-image: url('images/o9WizfI.png')
 }
 
+#temp-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 180px;
+    transform: translate(-50%, -50%);
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 20;
+    pointer-events: none;
+    background: rgba(0,0,0,0.8);
+
+
+}
+
 
