@@ -35,6 +35,16 @@ body {
     background-position: center;
 }
 
+.link-going-left, .link-going-right, .link-going-up, .link-going-down {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    z-index: 10;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 .link-going-left {
 background-image: url('images/1Xq9biB.png');
 }
@@ -105,3 +115,27 @@ background-image: url('images/1Xq9biB.png');
 .lanterns {
     background-image: url('images/wiSiY09.png')
 }
+
+.slicer, .skeletor {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    z-index: 5;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.slicer {
+    background-image: url('images/c6JFi5Z.png')
+}
+
+.skeletor {
+    background-image: url('images/Ei1VnX8.png')
+}
+
+.kaboom {
+    background-image: url('images/o9WizfI.png')
+}
+
+
