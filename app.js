@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         createPlayer()
-        // createAvatar()
     }
 
     createBoard();
@@ -141,17 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log((playerPosition % width) * tileSize)
 
         playerElement.style.left = `${(playerPosition % width) * tileSize}px `
-        //playerElement.style.right = `${(playerPosition % width) * tileSize}px `
         playerElement.style.top = `${Math.floor(playerPosition / width) * tileSize}px `
-        //playerElement.style.bottom = `${Math.floor(playerPosition / width) * tileSize}px `
 
-        grid.appendChild(playerElement)
-    }
-
-    function createAvatar() {
-        const playerElement = document.createElement('div')
-        playerElement.className = 'link-going-right'
-        playerElement.id = 'player'
         grid.appendChild(playerElement)
     }
 
@@ -257,6 +247,71 @@ document.addEventListener('DOMContentLoaded', () => {
             !square.classList.contains('fire-pot')
     }
 
+
+    function spawnKaboom() {
+        let kaboomX = playerPosition % width
+        let kaboomY = Math.floor(playerPosition / width)
+
+        switch (playerPosition) {
+            case 'left':
+                kaboomX -= 1
+                break
+            case 'right':
+                kaboomX += 1
+                break
+            case 'up':
+                kaboomY -= 1
+                break
+            case 'down':
+                kaboomY += 1
+                break
+        }
+
+        // < >
+        if (kaboomX < width && kaboomX >= 0 && kaboomY < 9 || kaboomY >= 0) {
+            const kaboomElement = document.createElement('div')
+            kaboomElement.className = 'kaboom'
+            kaboomElement.style.left = `${kaboomX * tileSize}px`
+            kaboomElement.style.top = `${kaboomY * tileSize}px`
+            grid.appendChild(kaboomElement)
+
+            checkKaboomEnemyCollision(kaboomX, kaboomY)
+
+            setTimeout(() => {
+                if (kaboomElement.parentNode) {
+                    kaboomElement.parentNode.removeChild(kaboomElement)
+                }
+            }, 1000)
+        }
+
+    }
+
+
+    function checkKaboomEnemyCollision(kaboomX, kaboomY) {
+        for (let i = enemies.length - 1; i >= 0; i--) {
+            const enemy = enemies[i];
+            const enemyX = Math.round(enemy.x)
+            const enemyY = Math.round(enemy.y)
+
+            if (enemyX === kaboomX && enemyY === kaboomY) {
+                if (enemy.element.parentNode) {
+                    enemy.element.parentNode.removeChild(enemy.element)
+                }
+                enemies.splice(i, 1)
+                score++
+                updateDisplay()
+                break
+            }
+        }
+    }
+
+    function updateDisplay(){
+        scoreDisplay.innerHTML = score
+        levelDisplay.innerHTML = level + 1
+        enemiesDisplay.innerHTML = enemies.length
+    }
+
+
     function nextLevel() {
         level = (level + 1) % maps.length
         createBoard()
@@ -315,7 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 movePlayer('down')
                 break
             case 'Space':
-                // spawnKaboom()
+                e.preventDefault()
+                spawnKaboom()
                 break
         }
     })
