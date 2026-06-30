@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // < >
-        if (kaboomX < width && kaboomX >= 0 && kaboomY < 9 || kaboomY >= 0) {
+        if (kaboomX >= 0 && kaboomX < width && kaboomY >= 0 && kaboomY < 9) {
             const kaboomElement = document.createElement('div')
             kaboomElement.className = 'kaboom'
             kaboomElement.style.left = `${kaboomX * tileSize}px`
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateDisplay(){
+    function updateDisplay() {
         scoreDisplay.innerHTML = score
         levelDisplay.innerHTML = level + 1
         enemiesDisplay.innerHTML = enemies.length
@@ -348,11 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, duration)
     }
 
-
     document.addEventListener('keydown', (e) => {
         if (!gameRunning) return
 
-        switch (e.key) {
+        switch (e.code) {
             case 'ArrowLeft':
                 e.preventDefault()
                 movePlayer('left')
@@ -375,5 +374,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 break
         }
     })
+
+    function gameOver() {
+        gameRunning = false
+        showTemporaryMessage(`Game over! \nFinal score: ${score}`, 'white', 3000)
+    }
 
 })
