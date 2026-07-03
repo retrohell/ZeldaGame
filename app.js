@@ -19,46 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // y, w, x,z = corner walls | a, b = side walls | c, d = top/bottom walls
     // ) = laterns | ( fire pots | %  = left door | ´ = top door | $ = stairs
     // * = slicer enemy | } = skeletor enemy | space = empty walkable area
-    const maps = [
-        // Level 1 layout
-        [
-            'ycc)cc´c(w',
-            'a        b',
-            'a      * b',
-            'a       }$',
-            'a        b',
-            'a        b',
-            'a   *    b',
-            'a        b',
-            'xd)ddd)ddz',
-        ],
-        // Level 2 layout
-        [
-            'yccccccwyb',
-            'a        b',
-            'a %      b',
-            'a %      b',
-            'a      * b',
-            'a   (    b',
-            'a %      b',
-            'a     )  b',
-            'yccccccwyb',
-        ],
-        // Level 3 layout
-        [
-            'ycc)xdd))c',
-            'a        b',
-            'a %      b',
-            'a      * b',
-            'a   (    b',
-            'a %      b',
-            'a %      b',
-            'a     )  b',
-            'xdd))cc´cw',
-        ]
-    ];
+    const maps = [// Level 1 layout
+        ['ycc)cc´c(w', 'a        b', 'a      * b', 'a       }$', 'a        b', 'a        b', 'a   *    b', 'a        b', 'xd)ddd)ddz',], // Level 2 layout
+        ['yccccccwyb', 'a        b', 'a %      b', 'a %      b', 'a      * b', 'a   (    b', 'a %      b', 'a     )  b', 'yccccccwyb',], // Level 3 layout
+        ['ycc)xdd))c', 'a        b', 'a %      b', 'a      * b', 'a   (    b', 'a %      b', 'a %      b', 'a     )  b', 'xdd))cc´cw',]];
 
     function createBoard() {
+
+        gameRunning = true
+        grid.innerHTML = ''
+        squares.length = 0
+        enemies = []
 
         const currentMap = maps[level];
 
@@ -75,11 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         createPlayer()
+        updateDisplay()
     }
-
-    createBoard();
-
-    console.log(squares);
 
 
     function addMapElement(square, char, x, y) {
@@ -137,8 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         playerElement.className = 'link-going-right'
         playerElement.id = 'player'
 
-        console.log((playerPosition % width) * tileSize)
-
         playerElement.style.left = `${(playerPosition % width) * tileSize}px `
         playerElement.style.top = `${Math.floor(playerPosition / width) * tileSize}px `
 
@@ -153,10 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         slicerElement.style.top = `${y * tileSize}px`
 
         const slicer = {
-            x, y,
-            direction: -1,
-            type: 'slicer',
-            slicerElement
+            x, y, direction: -1, type: 'slicer', element: slicerElement
         }
 
         enemies.push(slicer)
@@ -171,11 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
         skeletorElement.style.top = `${y * tileSize}px`
 
         const skeletor = {
-            x, y,
-            direction: -1,
-            timer: Math.random() * 5,
-            type: 'skeletor',
-            skeletorElement
+            x, y, direction: -1, timer: Math.random() * 5, type: 'skeletor', element: skeletorElement
         }
 
         enemies.push(skeletor)
@@ -189,33 +148,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
         switch (direction) {
             case 'left':
-                if (playerPosition % width !== 0) newPosition = newPosition - 1
+                if (playerPosition % width !== 0) newPosition = playerPosition - 1
                 playerElement.className = 'link-going-left'
                 playerDirection = 'left'
-                break;
+                break
             case 'right':
-                if (playerPosition % width !== width - 1) newPosition = newPosition + 1
+                if (playerPosition % width !== width - 1) newPosition = playerPosition + 1
                 playerElement.className = 'link-going-right'
                 playerDirection = 'right'
-                break;
+                break
             case 'up':
-                if (playerPosition - width >= 0) newPosition = newPosition - width
+                if (playerPosition - width >= 0) newPosition = playerPosition - width
                 playerElement.className = 'link-going-up'
                 playerDirection = 'up'
-                break;
+                break
             case 'down':
-                if (playerPosition + width < width * 9) newPosition = newPosition + width
+                if (playerPosition + width < width * 9) newPosition = playerPosition + width
                 playerElement.className = 'link-going-down'
                 playerDirection = 'down'
-                break;
+                break
         }
 
         if (canMoveTo(newPosition)) {
             const square = squares[newPosition]
-
             if (square.classList.contains('left-door')) {
                 square.classList.remove('left-door')
             }
+
             if (square.classList.contains('top-door') || square.classList.contains('stairs')) {
                 if (enemies.length === 0) {
                     nextLevel()
@@ -226,8 +185,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             playerPosition = newPosition
-            playerElement.style.left = `${(playerPosition % width) * tileSize}px `
-            playerElement.style.top = `${Math.floor(playerPosition / width) * tileSize}px `
+            playerElement.style.left = `${(playerPosition % width) * tileSize}px`
+            playerElement.style.top = `${Math.floor(playerPosition / width) * tileSize}px`
+
+            checkPlayerEnemyCollision()
         }
     }
 
@@ -235,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (position < 0 || position >= squares.length) return false
         const square = squares[position]
 
-        return !square.classList.contains('left-wall') &&
+        return  !square.classList.contains('left-wall') &&
             !square.classList.contains('right-wall') &&
             !square.classList.contains('top-wall') &&
             !square.classList.contains('bottom-wall') &&
@@ -305,6 +266,75 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function checkPlayerEnemyCollision() {
+        const playerX = playerPosition % width
+        const PlayerY = Math.floor(playerPosition / width)
+
+        for (const enemy of enemies) {
+            const enemyX = Math.round(enemy.x)
+            const enemyY = Math.round(enemy.y)
+
+            if (enemyX === playerX && enemyY === PlayerY) {
+                gameOver()
+                return
+            }
+        }
+    }
+
+    function moveEnemies(deltaTime) {
+        for (const enemy of enemies) {
+            if (enemy.type === 'slicer') {
+                moveSlicer(enemy, deltaTime)
+            } else if (enemy.type === 'skeletor') {
+                moveSkeletor(enemy, deltaTime)
+            }
+        }
+    }
+
+    function moveSlicer(slicer, deltaTime) {
+        const speed = 2 * deltaTime
+        let newX = slicer.x + (slicer.direction * speed)
+        let newY = Math.round(slicer.y)
+
+        if (newX >= width || newX < 0 || isWall(Math.round(newX), newY)) {
+            slicer.direction *= -1
+        } else {
+            slicer.x = newX
+        }
+        slicer.element.style.left = `${slicer.x * tileSize}px`
+    }
+
+    function moveSkeletor(skeletor, deltaTime) {
+        const speed = 1.5 * deltaTime
+        skeletor.timer -= deltaTime
+
+        if (skeletor.timer <= 0) {
+            skeletor.direction *= -1
+            skeletor.timer = Math.random() * 5
+        }
+
+        const newY = skeletor.y + (skeletor.direction * speed)
+        const newX = Math.round(skeletor.x)
+
+        if (newY >= 9 || newY < 0 || isWall(newX, Math.round(newY))) {
+            skeletor.direction *= -1
+        } else {
+            skeletor.y = newY
+        }
+
+        skeletor.element.style.top = `${skeletor.y * tileSize}px`
+    }
+
+
+    function isWall(x, y) {
+        const position = y * width + x
+        if (position < 0 || position >= squares.length) return true
+        const square = squares[position]
+
+        return square.classList.contains('left-wall') || square.classList.contains('right-wall') || square.classList.contains('top-wall') || square.classList.contains('bottom-wall') || square.classList.contains('top-left-wall') || square.classList.contains('top-right-wall') || square.classList.contains('bottom-left-wall') || square.classList.contains('bottom-right-wall') || square.classList.contains('lanterns') || square.classList.contains('fire-pot')
+
+    }
+
     function updateDisplay() {
         scoreDisplay.innerHTML = score
         levelDisplay.innerHTML = level + 1
@@ -318,11 +348,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showEnemiesRemainingMessage() {
-        grid.style.fliter = 'hue-rotate(0deg) saturate(2) brightness(1.5)'
+        grid.style.filter = 'hue-rotate(0deg) saturate(2) brightness(1.5)'
         grid.style.boxShadow = '0 0 20px red'
 
         setTimeout(() => {
-            grid.style.fliter = ''
+            grid.style.filter = ''
             grid.style.boxShadow = ''
         }, 300)
 
@@ -375,9 +405,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })
 
+    let lastTime = 0
+    let animationId
+
+    function gameLoop(currentTime) {
+        const deltaTime = (currentTime - lastTime) / 1000
+        lastTime = currentTime
+        if (gameRunning && 0.1 > deltaTime) {
+            moveEnemies(deltaTime)
+            checkPlayerEnemyCollision()
+        }
+        animationId = requestAnimationFrame(gameLoop)
+    }
+
     function gameOver() {
         gameRunning = false
         showTemporaryMessage(`Game over! \nFinal score: ${score}`, 'white', 3000)
     }
 
+    createBoard()
+    animationId = requestAnimationFrame(gameLoop)
 })
